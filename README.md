@@ -1,112 +1,98 @@
-# ReResell - Marketplace for Second-hand Items
+# ReResell
 
-A Carousell-style marketplace for buying and selling pre-loved items, built with Next.js 14+, TypeScript, and Tailwind CSS.
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=flat-square&logo=prisma)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-336791?style=flat-square&logo=postgresql)](https://neon.tech/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-## Features
+**[Live Demo](https://recycle-resell.netlify.app)** | **[Documentation](https://alfredang.github.io/recycle-resell)**
 
-- **User Authentication**: Email/password and Google OAuth
-- **Listings**: Create, edit, delete listings with multiple images
-- **Search & Discovery**: Filter by category, price, condition, location
-- **Favorites**: Save listings to your watchlist
-- **Real-time Chat**: Message buyers/sellers (requires Pusher setup)
-- **Offers**: Make and respond to offers
-- **Reviews**: Rate users after transactions
-- **Mobile-first Design**: Responsive UI with bottom navigation
+A modern, Carousell-style marketplace for buying and selling second-hand items. Built with Next.js, TypeScript, and Tailwind CSS.
+
+![ReResell Screenshot](docs/images/screenshot.png)
+
+## About
+
+ReResell is a full-stack marketplace application that enables users to buy and sell pre-loved items. The platform promotes sustainability by giving items a second life while helping users save money.
+
+### Key Features
+
+- **User Authentication** - Secure login with email/password or Google OAuth
+- **Listing Management** - Create, edit, and manage listings with multiple images
+- **Advanced Search** - Filter by category, price range, condition, and location
+- **Favorites** - Save listings to your personal watchlist
+- **Real-time Chat** - Message buyers and sellers instantly
+- **Offer System** - Make and negotiate offers on listings
+- **User Reviews** - Build trust with ratings after transactions
+- **Responsive Design** - Mobile-first UI with bottom navigation
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14+ (App Router), React 19, TypeScript
-- **Styling**: Tailwind CSS 4, shadcn/ui components
-- **Database**: PostgreSQL (Neon recommended)
-- **ORM**: Prisma
-- **Auth**: NextAuth.js v5
-- **Storage**: Vercel Blob
-- **Real-time**: Pusher
+| Category | Technology |
+|----------|------------|
+| **Framework** | Next.js 16 (App Router) |
+| **Language** | TypeScript 5 |
+| **Styling** | Tailwind CSS 4, shadcn/ui |
+| **Database** | PostgreSQL (Neon Serverless) |
+| **ORM** | Prisma 7 |
+| **Authentication** | NextAuth.js v5 |
+| **Storage** | Vercel Blob |
+| **Real-time** | Pusher |
+| **Deployment** | Netlify / Vercel |
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
-- PostgreSQL database (we recommend [Neon](https://neon.tech))
+- PostgreSQL database ([Neon](https://neon.tech) recommended)
 
-### 1. Clone and Install
+### Installation
 
 ```bash
-git clone <your-repo-url>
+# Clone the repository
+git clone https://github.com/alfredang/recycle-resell.git
 cd recycle-resell
+
+# Install dependencies
 npm install
-```
 
-### 2. Environment Setup
-
-Copy the example environment file:
-
-```bash
+# Set up environment variables
 cp .env.example .env
-```
+# Edit .env with your credentials
 
-Fill in the required environment variables:
-
-```env
-# Database (Neon PostgreSQL)
-DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
-
-# NextAuth.js
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="generate-with-openssl-rand-base64-32"
-
-# Google OAuth (from Google Cloud Console)
-GOOGLE_CLIENT_ID="your-client-id"
-GOOGLE_CLIENT_SECRET="your-client-secret"
-
-# Vercel Blob Storage
-BLOB_READ_WRITE_TOKEN="your-vercel-blob-token"
-
-# Pusher (optional, for real-time chat)
-PUSHER_APP_ID="your-pusher-app-id"
-PUSHER_KEY="your-pusher-key"
-PUSHER_SECRET="your-pusher-secret"
-PUSHER_CLUSTER="your-pusher-cluster"
-NEXT_PUBLIC_PUSHER_KEY="your-pusher-key"
-NEXT_PUBLIC_PUSHER_CLUSTER="your-pusher-cluster"
-```
-
-### 3. Database Setup
-
-Push the schema to your database:
-
-```bash
+# Push database schema
 npm run db:push
-```
 
-Seed the database with sample data:
-
-```bash
+# Seed sample data
 npm run db:seed
-```
 
-### 4. Run Development Server
-
-```bash
+# Start development server
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Available Scripts
+### Test Accounts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run db:push` | Push Prisma schema to database |
-| `npm run db:migrate` | Run database migrations |
-| `npm run db:seed` | Seed database with sample data |
-| `npm run db:studio` | Open Prisma Studio |
+After seeding, you can log in with:
+
+| Email | Password |
+|-------|----------|
+| alice@example.com | password123 |
+| bob@example.com | password123 |
+| carol@example.com | password123 |
+
+## Documentation
+
+For detailed documentation, visit our [GitHub Pages documentation site](https://alfredang.github.io/recycle-resell).
+
+- [Getting Started](https://alfredang.github.io/recycle-resell/getting-started/)
+- [Configuration](https://alfredang.github.io/recycle-resell/configuration/)
+- [API Reference](https://alfredang.github.io/recycle-resell/api/)
+- [Deployment](https://alfredang.github.io/recycle-resell/deployment/)
 
 ## Project Structure
 
@@ -120,51 +106,54 @@ src/
 ├── components/
 │   ├── ui/                # shadcn/ui components
 │   ├── layout/            # Header, MobileNav
-│   ├── listings/          # Listing card, grid, etc.
-│   ├── auth/              # Auth forms
-│   └── forms/             # Form components
+│   ├── listings/          # Listing components
+│   └── auth/              # Auth forms
 ├── lib/                   # Utilities and configs
-│   ├── auth.ts            # NextAuth config
-│   ├── prisma.ts          # Prisma client
-│   ├── utils.ts           # Helper functions
-│   └── validations.ts     # Zod schemas
 └── types/                 # TypeScript types
 ```
 
-## Test Accounts
+## Scripts
 
-After seeding the database, you can log in with:
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run db:push` | Push schema to database |
+| `npm run db:seed` | Seed sample data |
+| `npm run db:studio` | Open Prisma Studio |
 
-| Email | Password |
-|-------|----------|
-| alice@example.com | password123 |
-| bob@example.com | password123 |
-| carol@example.com | password123 |
+## Environment Variables
 
-## Deployment
+```env
+# Required
+DATABASE_URL="postgresql://..."
+NEXTAUTH_URL="https://your-domain.com"
+NEXTAUTH_SECRET="your-secret-key"
 
-### Vercel (Recommended)
+# Optional - Google OAuth
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
 
-1. Push your code to GitHub
-2. Import the project in Vercel
-3. Add environment variables
-4. Deploy
+# Optional - Image uploads
+BLOB_READ_WRITE_TOKEN=""
 
-### Other Platforms
+# Optional - Real-time chat
+PUSHER_APP_ID=""
+PUSHER_KEY=""
+PUSHER_SECRET=""
+PUSHER_CLUSTER=""
+```
 
-1. Build the project: `npm run build`
-2. Start the server: `npm run start`
+## Contributing
 
-## Environment Variables for Production
-
-Make sure to set these in your production environment:
-
-- `DATABASE_URL` - Your production PostgreSQL URL
-- `NEXTAUTH_URL` - Your production URL
-- `NEXTAUTH_SECRET` - Generate a secure secret
-- `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` - Google OAuth credentials
-- `BLOB_READ_WRITE_TOKEN` - Vercel Blob token
+Contributions are welcome! Please read our contributing guidelines before submitting a pull request.
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+Built with Next.js and deployed on Netlify
