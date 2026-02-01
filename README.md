@@ -7,7 +7,8 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-336791?style=flat-square&logo=postgresql)](https://neon.tech/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-**[Live Demo](https://recycle-resell.netlify.app)** | **[Documentation](https://alfredang.github.io/recycle-resell)**
+[![Demo](https://img.shields.io/badge/Demo-Live_Site-blue?style=for-the-badge&logo=netlify)](https://recycle-resell.netlify.app)
+[![Docs](https://img.shields.io/badge/Docs-GitHub_Pages-green?style=for-the-badge&logo=github)](https://alfredang.github.io/recycle-resell)
 
 A modern, Carousell-style marketplace for buying and selling second-hand items. Built with Next.js, TypeScript, and Tailwind CSS.
 
