@@ -12,7 +12,7 @@
 
 A modern, Carousell-style marketplace for buying and selling second-hand items. Built with Next.js, TypeScript, and Tailwind CSS.
 
-![ReResell Screenshot](docs/images/screenshot.png)
+![ReResell Screenshot](docs/images/screenshot.jpeg)
 
 ## About
 
