@@ -36,8 +36,10 @@ export type ListingWithRelations = Listing & {
 
 export type ListingCardData = Pick<
   Listing,
-  "id" | "title" | "slug" | "price" | "condition" | "status" | "location" | "createdAt"
+  "id" | "title" | "slug" | "condition" | "status" | "location"
 > & {
+  price: string
+  createdAt: string
   images: Pick<ListingImage, "url">[]
   seller: Pick<User, "id" | "name" | "image">
   isFavorited?: boolean

@@ -220,8 +220,9 @@ export function SearchFilters() {
     router.push("/search")
   }
 
-  const hasActiveFilters =
+  const hasActiveFilters = Boolean(
     (category && category !== "all") || minPrice || maxPrice || (condition && condition !== "all") || sort !== "recent"
+  )
 
   const filterProps = {
     query,
