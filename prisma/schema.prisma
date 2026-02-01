@@ -1,0 +1,412 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============ AUTH & USERS ============
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String?
+  password        String?
+  image           String?
+  bio             String?   @db.Text
+  phone           String?
+  emailVerified   DateTime?
+  isVerified      Boolean   @default(false)
+  verifiedAt      DateTime?
+  lastActiveAt    DateTime  @default(now())
+
+  // Location
+  location        String?
+  latitude        Float?
+  longitude       Float?
+
+  // Auth relations
+  accounts        Account[]
+  sessions        Session[]
+
+  // Marketplace relations
+  listings        Listing[]
+  favorites       Favorite[]
+  reviewsGiven    Review[]   @relation("ReviewAuthor")
+  reviewsReceived Review[]   @relation("ReviewTarget")
+
+  // Chat relations
+  conversationsAsBuyer  Conversation[] @relation("ConversationBuyer")
+  conversationsAsSeller Conversation[] @relation("ConversationSeller")
+  messages              Message[]
+
+  // Offer relations
+  offersMade     Offer[] @relation("OfferBuyer")
+  offersReceived Offer[] @relation("OfferSeller")
+
+  // Transaction relations
+  salesTransactions    Transaction[] @relation("TransactionSeller")
+  purchaseTransactions Transaction[] @relation("TransactionBuyer")
+
+  // Notifications
+  notifications  Notification[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============ CATEGORIES ============
+
+model Category {
+  id           String     @id @default(cuid())
+  name         String     @unique
+  slug         String     @unique
+  description  String?
+  icon         String?
+  parentId     String?
+  parent       Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children     Category[] @relation("CategoryHierarchy")
+  order        Int        @default(0)
+  isActive     Boolean    @default(true)
+
+  listings     Listing[]
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+// ============ LISTINGS ============
+
+enum ListingStatus {
+  DRAFT
+  AVAILABLE
+  RESERVED
+  SOLD
+  DELETED
+}
+
+enum ItemCondition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+  POOR
+}
+
+model Listing {
+  id           String        @id @default(cuid())
+  title        String
+  slug         String        @unique
+  description  String        @db.Text
+  price        Decimal       @db.Decimal(10, 2)
+  condition    ItemCondition
+  status       ListingStatus @default(AVAILABLE)
+
+  // Location
+  location     String
+  latitude     Float?
+  longitude    Float?
+
+  // Metadata
+  brand        String?
+  tags         String[]
+  viewCount    Int           @default(0)
+  likeCount    Int           @default(0)
+
+  // Shipping
+  meetupOnly   Boolean       @default(true)
+  canDeliver   Boolean       @default(false)
+  deliveryFee  Decimal?      @db.Decimal(10, 2)
+
+  // Relations
+  sellerId     String
+  seller       User          @relation(fields: [sellerId], references: [id])
+
+  categoryId   String
+  category     Category      @relation(fields: [categoryId], references: [id])
+
+  images       ListingImage[]
+  favorites    Favorite[]
+  conversations Conversation[]
+  offers       Offer[]
+  transactions Transaction[]
+
+  // Timestamps
+  publishedAt  DateTime?
+  reservedAt   DateTime?
+  soldAt       DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([sellerId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([location])
+  @@index([createdAt])
+  @@index([price])
+}
+
+model ListingImage {
+  id         String   @id @default(cuid())
+  url        String
+  key        String
+  order      Int      @default(0)
+  isPrimary  Boolean  @default(false)
+
+  listingId  String
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@index([listingId])
+}
+
+// ============ FAVORITES/WATCHLIST ============
+
+model Favorite {
+  id         String   @id @default(cuid())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  listingId  String
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, listingId])
+  @@index([userId])
+}
+
+// ============ CHAT & MESSAGING ============
+
+model Conversation {
+  id          String    @id @default(cuid())
+
+  buyerId     String
+  buyer       User      @relation("ConversationBuyer", fields: [buyerId], references: [id])
+
+  sellerId    String
+  seller      User      @relation("ConversationSeller", fields: [sellerId], references: [id])
+
+  listingId   String
+  listing     Listing   @relation(fields: [listingId], references: [id])
+
+  messages    Message[]
+  offers      Offer[]
+
+  lastMessageAt DateTime?
+
+  buyerArchived  Boolean @default(false)
+  sellerArchived Boolean @default(false)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([buyerId, sellerId, listingId])
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  OFFER
+  SYSTEM
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  content        String      @db.Text
+  type           MessageType @default(TEXT)
+  imageUrl       String?
+
+  senderId       String
+  sender         User        @relation(fields: [senderId], references: [id])
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  isRead         Boolean     @default(false)
+  readAt         DateTime?
+
+  offerId        String?
+  offer          Offer?      @relation(fields: [offerId], references: [id])
+
+  createdAt      DateTime    @default(now())
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+// ============ OFFERS ============
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  WITHDRAWN
+}
+
+model Offer {
+  id             String      @id @default(cuid())
+  amount         Decimal     @db.Decimal(10, 2)
+  status         OfferStatus @default(PENDING)
+  message        String?     @db.Text
+
+  buyerId        String
+  buyer          User        @relation("OfferBuyer", fields: [buyerId], references: [id])
+
+  sellerId       String
+  seller         User        @relation("OfferSeller", fields: [sellerId], references: [id])
+
+  listingId      String
+  listing        Listing     @relation(fields: [listingId], references: [id])
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  messages       Message[]
+
+  expiresAt      DateTime
+  respondedAt    DateTime?
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([listingId])
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+// ============ TRANSACTIONS ============
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+model Transaction {
+  id            String            @id @default(cuid())
+  amount        Decimal           @db.Decimal(10, 2)
+  status        TransactionStatus @default(PENDING)
+
+  sellerId      String
+  seller        User              @relation("TransactionSeller", fields: [sellerId], references: [id])
+
+  buyerId       String
+  buyer         User              @relation("TransactionBuyer", fields: [buyerId], references: [id])
+
+  listingId     String
+  listing       Listing           @relation(fields: [listingId], references: [id])
+
+  reviews       Review[]
+
+  completedAt   DateTime?
+
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([sellerId])
+  @@index([buyerId])
+}
+
+// ============ REVIEWS & RATINGS ============
+
+enum ReviewType {
+  BUYER_TO_SELLER
+  SELLER_TO_BUYER
+}
+
+model Review {
+  id            String      @id @default(cuid())
+  rating        Int
+  comment       String?     @db.Text
+  type          ReviewType
+
+  authorId      String
+  author        User        @relation("ReviewAuthor", fields: [authorId], references: [id])
+
+  targetId      String
+  target        User        @relation("ReviewTarget", fields: [targetId], references: [id])
+
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([transactionId, type])
+  @@index([targetId])
+  @@index([authorId])
+}
+
+// ============ NOTIFICATIONS ============
+
+enum NotificationType {
+  NEW_MESSAGE
+  NEW_OFFER
+  OFFER_ACCEPTED
+  OFFER_REJECTED
+  LISTING_SOLD
+  LISTING_LIKED
+  PRICE_DROP
+  NEW_REVIEW
+  SYSTEM
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  link      String?
+  metadata  Json?
+
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
